@@ -190,4 +190,62 @@ public abstract class AutoCRUD<T, ID> implements CRUD<T, ID> {
         }
         return null;
     }
+
+    public T getByIngredientId(ID id) {
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+        String query = "SELECT * FROM " + getTableName() + 
+                        " WHERE ingredientId = " + id +
+                        " ORDER BY createAt DESC ;";
+
+        try {
+            connection = ConnectionDB.createConnection();
+            assert connection != null;
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery(query);
+            if (resultSet.next()) {
+                return mapResultSetToEntity(resultSet);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (resultSet != null) resultSet.close();
+                if (statement != null) statement.close();
+                if (connection != null) connection.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return null;
+    }
+
+    public List<T> findAllByRestaurantId(Integer id) {
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+        List<T> all = new ArrayList<>();
+        String query = "SELECT * FROM " + getTableName() +
+                        " WHERE restaurantid = " + id + ";";
+
+        try {
+            connection = ConnectionDB.createConnection();
+            assert connection != null;
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery(query);
+            while (resultSet.next()) all.add(mapResultSetToEntity(resultSet));
+            return all;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (resultSet != null) resultSet.close();
+                if (statement != null) statement.close();
+                if (connection != null) connection.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 }

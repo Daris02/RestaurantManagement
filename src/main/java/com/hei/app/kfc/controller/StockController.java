@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hei.app.kfc.model.entity.Stock;
 import com.hei.app.kfc.model.entity.StockMove;
+import com.hei.app.kfc.service.StockMoveService;
 import com.hei.app.kfc.service.StockService;
 
 import lombok.AllArgsConstructor;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequestMapping("/stocks")
 public class StockController {
     private final StockService service;
+    private final StockMoveService stockMoveService;
 
     @GetMapping({"", "/"})
     public List<Stock> getAll() {
@@ -43,6 +45,6 @@ public class StockController {
         @PathVariable("restaurantId") Integer restaurantId,
         @RequestParam(value = "start", required = false) String start,
         @RequestParam(value = "end", required = false) String end ) {
-        return service.getMovesDetails(restaurantId, start, end);
+        return stockMoveService.getMovesDetails(restaurantId, start, end);
     }
 }

@@ -38,36 +38,6 @@ public class StockRepository extends AutoCRUD<Stock, Integer> {
         }
     }
 
-    public Stock getByIngredientId(Integer id) {
-        Connection connection = null;
-        Statement statement = null;
-        ResultSet resultSet = null;
-        String query = "SELECT * FROM stock " +
-                        " WHERE ingredientid = " + id +
-                        " ORDER BY createAt DESC ;";
-
-        try {
-            connection = ConnectionDB.createConnection();
-            assert connection != null;
-            statement = connection.createStatement();
-            resultSet = statement.executeQuery(query);
-            if (resultSet.next()) {
-                return mapResultSetToEntity(resultSet);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            try {
-                if (resultSet != null) resultSet.close();
-                if (statement != null) statement.close();
-                if (connection != null) connection.close();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return null;
-    }
-
     public List<Stock> findAllByRestaurantId(Integer id) {
         Connection connection = null;
         Statement statement = null;

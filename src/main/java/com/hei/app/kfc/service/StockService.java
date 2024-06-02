@@ -1,10 +1,8 @@
 package com.hei.app.kfc.service;
 
-import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import com.hei.app.kfc.model.entity.Stock;
@@ -63,13 +61,5 @@ public class StockService {
 
     public Stock getByIngredientId(Integer id) {
         return repository.getByIngredientId(id);
-    }
-
-    public Object getMovesDetails(Integer restaurantId, String startDate, String endDate) {
-        List<Stock> stocks = repository.findAllByRestaurantId(restaurantId);
-        Instant startInstant = Timestamp.valueOf(startDate + " 00:00:00").toInstant().minusSeconds(14400);
-        Instant endInstant = Timestamp.valueOf(endDate + " 00:00:00").toInstant().minusSeconds(14400);
-        stocks.stream().filter(s -> s.getCreateAt().isAfter(endInstant) && s.getCreateAt().isBefore(endInstant));
-        return Map.of(startInstant, endInstant);
     }
 }
