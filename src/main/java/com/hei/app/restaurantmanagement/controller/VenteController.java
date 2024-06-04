@@ -36,10 +36,10 @@ public class VenteController {
         return service.saveAll(ventes);
     }
 
-    @GetMapping("/leadboard")
-    public Object leadBoardMenu(
+    @GetMapping("/summary")
+    public Object summaryMenus(
         @RequestParam(value = "start", required = false) String start,
         @RequestParam(value = "end", required = false) String end ) {
-            return null;
+            return service.summaryMenus(start, end);
         }
 }
