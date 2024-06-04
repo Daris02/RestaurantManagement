@@ -25,8 +25,7 @@ public class StockMoveService {
     private final StockMoveRepository repository;
     private final IngredientService ingredientService;
     private final UnityService unityService;
-
-    private final ZoneId ZONEID = ZoneId.systemDefault();
+    private final ZoneId ZONEID = ZoneId.of("UTC+3");
 
     public StockMove getById(Integer id) {
         return repository.getById(id);
@@ -51,8 +50,8 @@ public class StockMoveService {
 
     public Object getMovesDetails(Integer restaurantId, String startDate, String endDate) {
         List<StockMove> stockMoves = repository.findAllByRestaurantId(restaurantId);
-        Instant startInstant = Timestamp.valueOf(startDate + " 00:00:00").toInstant().minusSeconds(14400);
-        Instant endInstant = Timestamp.valueOf(endDate + " 00:00:00").toInstant().minusSeconds(14400);
+        Instant startInstant = dateStringToInstant(startDate);
+        Instant endInstant = dateStringToInstant(endDate);
         List<StockMove> stockMovesFiltered = stockMoves.stream().filter(s -> (s.getCreateAt().isAfter(startInstant) && s.getCreateAt().isBefore(endInstant))).toList();
         List<Map<String, Object>> all = new ArrayList<>();
         for (StockMove stockMove : stockMovesFiltered) {
@@ -67,6 +66,10 @@ public class StockMoveService {
         return all;
     }
     
+    private Instant dateStringToInstant(String dateString) {
+        return Timestamp.valueOf(dateString + " 00:00:00").toInstant().minusSeconds(14400);
+    }
+
     private String dateFormatter(Instant instant) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         LocalDateTime dateTime = LocalDateTime.ofInstant(instant, ZONEID);

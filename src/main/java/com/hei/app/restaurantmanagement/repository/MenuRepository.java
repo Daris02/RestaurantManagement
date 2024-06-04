@@ -27,7 +27,7 @@ public class MenuRepository extends AutoCRUD<Menu, Integer> {
                 resultSet.getString("name"),
                 resultSet.getDouble("costPrice"),
                 resultSet.getDouble("sellPrice"),
-                resultSet.getTimestamp("createAt").toInstant(),
+                resultSet.getTimestamp("createAt").toInstant().minusSeconds(14400),
                 new ArrayList<>()
             );
         } catch (SQLException e) {

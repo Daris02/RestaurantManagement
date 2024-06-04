@@ -24,7 +24,7 @@ public class PriceRepository extends AutoCRUD<Price, Integer> {
             return new Price(
                 resultSet.getInt("id"),
                 resultSet.getDouble("value"),
-                resultSet.getTimestamp("createAt").toInstant()
+                resultSet.getTimestamp("createAt").toInstant().minusSeconds(14400)
             );
         } catch (SQLException e) {
             throw new RuntimeException(e);

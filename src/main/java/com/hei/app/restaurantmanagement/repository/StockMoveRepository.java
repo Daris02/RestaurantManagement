@@ -25,7 +25,7 @@ public class StockMoveRepository extends AutoCRUD<StockMove, Integer> {
             return new StockMove(
                 resultSet.getInt("id"),
                 resultSet.getDouble("value"),
-                resultSet.getTimestamp("createAt").toInstant(),
+                resultSet.getTimestamp("createAt").toInstant().minusSeconds(14400),
                 resultSet.getInt("ingredientId"),
                 resultSet.getInt("restaurantId"),
                 MoveType.valueOf(resultSet.getString("type"))

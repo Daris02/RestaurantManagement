@@ -29,7 +29,7 @@ public class StockRepository extends AutoCRUD<Stock, Integer> {
             return new Stock(
                 resultSet.getInt("id"),
                 resultSet.getDouble("value"),
-                resultSet.getTimestamp("createAt").toInstant(),
+                resultSet.getTimestamp("createAt").toInstant().minusSeconds(14400),
                 resultSet.getInt("ingredientId"),
                 resultSet.getInt("restaurantId")
             );
