@@ -7,6 +7,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import lombok.AllArgsConstructor;
@@ -26,8 +27,10 @@ import com.hei.app.restaurantmanagement.repository.VenteRepository;
 public class VenteService {
     private final VenteRepository repository;
     private final MenuService menuService;
+    private final UnityService unityService;
     private final StockService stockService;
     private final RestaurantService restaurantService;
+    private final IngredientService ingredientService;
 
     public Vente getById(Integer id) {
         return repository.getById(id);
@@ -77,6 +80,51 @@ public class VenteService {
                 result.put("Nbre vendus " + menu.getName(), nbrOfMenu);
                 result.put("Montant vendus " + menu.getName(), nbrOfMenu * menu.getSellPrice());
             }
+            all.add(result);
+        }
+        return all;
+    }
+
+    public Object mostIngredientUsed(Integer numberOfIngredient, String start, String end) {
+        List<Map<String, Object>> all = new ArrayList<>();
+        List<Menu> menus = new ArrayList<>();
+        Instant startInstant = dateStringToInstant(start);
+        Instant endInstant = dateStringToInstant(end);
+        for (Vente vente : getAll()) 
+            menus.add(menuService.getById(vente.getMenuId()));
+
+        Map<Integer, Double> ingredientTotalQuantity = new HashMap<>();
+        Map<Integer, String> ingredientMaxMenu = new HashMap<>();
+
+        for (Menu menu : menus) {
+            Instant menuDate = menu.getCreateAt();
+            if (menuDate.isAfter(startInstant) && menuDate.isBefore(endInstant)) {
+                for (IngredientMenu ingredientMenu : menu.getIngredients()) {
+                    int ingredientId = ingredientMenu.getIngredientId();
+                    double ingredientQuantity = ingredientMenu.getQuantity();
+                    double currentTotal = ingredientTotalQuantity.getOrDefault(ingredientId, 0.0);
+                    if (ingredientQuantity > currentTotal) ingredientMaxMenu.put(ingredientId, menu.getName());
+                    ingredientTotalQuantity.put(ingredientId, ingredientTotalQuantity.getOrDefault(ingredientId, 0.0) + ingredientQuantity);
+                }
+            }
+        }
+
+        List<Map.Entry<Integer, Double>> sortedIngredients = new ArrayList<>(ingredientTotalQuantity.entrySet());
+        sortedIngredients.sort((a, b) -> Double.compare(b.getValue(), a.getValue()));
+
+        List<Map.Entry<Integer, Double>> topXIngredients = sortedIngredients.subList(0, numberOfIngredient);
+
+        for (Map.Entry<Integer, Double> entry : topXIngredients) {
+            Map<String, Object> result = new LinkedHashMap<>();
+            Integer ingredientId = entry.getKey();
+            String menuName = ingredientMaxMenu.get(ingredientId);
+            String ingredientName = ingredientService.getById(ingredientId).getName();
+            String unityName = unityService.getById(ingredientService.getById(ingredientId).getUnityId()).getName();
+            result.put("ID ingredient", ingredientId);
+            result.put("Nom ingredient", ingredientName);
+            result.put("Menu Name", menuName);
+            result.put("Qte depensee", entry.getValue());
+            result.put("Unite", unityName);
             all.add(result);
         }
         return all;

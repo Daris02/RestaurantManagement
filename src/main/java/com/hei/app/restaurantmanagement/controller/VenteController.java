@@ -42,4 +42,12 @@ public class VenteController {
         @RequestParam(value = "end", required = false) String end ) {
             return service.summaryMenus(start, end);
         }
+    
+    @GetMapping("/mostused/{numberOfIngredient}")
+    public Object mostIngredientUsed(
+        @PathVariable("numberOfIngredient") Integer numberOfIngredient,
+        @RequestParam(value = "start", required = false) String start,
+        @RequestParam(value = "end", required = false) String end ) {
+        return service.mostIngredientUsed(numberOfIngredient, start, end);
+    }
 }
